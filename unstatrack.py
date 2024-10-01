@@ -36,11 +36,12 @@ async def on_message(message):
         if 'igsh' in query_params:
             # Remove 'igsh' query parameter
             query_params.pop('igsh', None)
-            new_query = urlencode(query_params, doseq=True)
-            new_url = urlunparse(parsed_url._replace(query=new_query))
 
-            # Reply with the modified URL
-            await message.reply(f'itym {new_url}')
+        new_query = urlencode(query_params, doseq=True)
+        new_url = urlunparse(parsed_url._replace(netloc='ddinstagram.com', query=new_query))
+
+        # Reply with the modified URL
+        await message.reply(f'itym {new_url}')
 
 # Run the bot with the token from the .env file
 client.run(TOKEN)
