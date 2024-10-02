@@ -31,15 +31,15 @@ async def on_message(message):
     if match:
         url = match.group(1)
         parsed_url = urlparse(url)
-        query_params = parse_qs(parsed_url.query)
+        #query_params = parse_qs(parsed_url.query)
 
         # Check if 'igsh' query parameter exists
-        if 'igsh' in query_params:
-            # Remove 'igsh' query parameter
-            query_params.pop('igsh', None)
+        #if 'igsh' in query_params:
+        #    # Remove 'igsh' query parameter
+        #    query_params.pop('igsh', None)
 
-        new_query = urlencode(query_params, doseq=True)
-        new_url = urlunparse(parsed_url._replace(netloc='ddinstagram.com', query=new_query))
+        #new_query = urlencode(query_params, doseq=True)
+        new_url = urlunparse(parsed_url._replace(netloc='ddinstagram.com', query=''))
 
         # Reply with the modified URL
         await message.reply(f'itym {new_url}')
