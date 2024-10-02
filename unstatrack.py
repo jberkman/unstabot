@@ -35,6 +35,7 @@ matchers = [
     Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com'),
     Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com'),
     Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)', unfurl=False),
+    Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com'),
 ]
 
 @client.event
