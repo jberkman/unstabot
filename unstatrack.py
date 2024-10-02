@@ -1,8 +1,10 @@
-import discord
-import re
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+#!/usr/bin/env python3
 from dotenv import load_dotenv
+from urllib.parse import urlparse, urlunparse
+import discord
+import discord
 import os
+import re
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,9 +15,27 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-# Regular expression to match Instagram and Twitter URLs
-instagram_url_pattern = re.compile(r'(https?://(?:www\.)?instagram\.com/[^\s]+)')
-twitter_url_pattern = re.compile(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)')
+class Matcher:
+    def __init__(self, regex, netloc=None, unfurl=True):
+        self.pattern = re.compile(regex)
+        self.netloc = netloc
+        self.unfurl = unfurl
+
+    def match_and_transform(self, message_content):
+        match = self.pattern.search(message_content)
+        if not match:
+            return None
+        parsed_url = urlparse(match.group(1))
+        netloc = self.netloc if self.netloc else parsed_url.netloc
+        url = urlunparse(parsed_url._replace(netloc=netloc, query=''))
+        return url if self.unfurl else f'<{url}>'
+
+# List of Matcher instances
+matchers = [
+    Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com'),
+    Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com'),
+    Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)', unfurl=False),
+]
 
 @client.event
 async def on_ready():
@@ -26,33 +46,12 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    # Search for Instagram URLs in the message
-    match = instagram_url_pattern.search(message.content)
-    if match:
-        url = match.group(1)
-        parsed_url = urlparse(url)
-        #query_params = parse_qs(parsed_url.query)
+    # FIXME? This will match the first URL in the message, even if there are multiple URLs
+    for matcher in matchers:
+        new_url = matcher.match_and_transform(message.content)
+        if new_url:
+            await message.reply(f'itym {new_url}')
+            break  # Exit the loop after the first match
 
-        # Check if 'igsh' query parameter exists
-        #if 'igsh' in query_params:
-        #    # Remove 'igsh' query parameter
-        #    query_params.pop('igsh', None)
-
-        #new_query = urlencode(query_params, doseq=True)
-        new_url = urlunparse(parsed_url._replace(netloc='ddinstagram.com', query=''))
-
-        # Reply with the modified URL
-        await message.reply(f'itym {new_url}')
-
-    # Search for Twitter/X URLs in the message
-    match = twitter_url_pattern.search(message.content)
-    if match:
-        url = match.group(1)
-        parsed_url = urlparse(url)
-        new_url = urlunparse(parsed_url._replace(netloc='fixupx.com', query=''))
-
-        # Reply with the modified URL
-        await message.reply(f'itym {new_url}')
-
-# Run the bot with the token from the .env file
+# Run the bot
 client.run(TOKEN)
