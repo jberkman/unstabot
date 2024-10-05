@@ -28,7 +28,7 @@ class Matcher:
         parsed_url = urlparse(match.group(1))
         netloc = self.netloc if self.netloc else parsed_url.netloc
         url = urlunparse(parsed_url._replace(netloc=netloc, query=''))
-        return url if self.unfurl else f'<{url}>'
+        return None if url == match.group(1) else url if self.unfurl else f'<{url}>'
 
 # List of Matcher instances
 matchers = [
