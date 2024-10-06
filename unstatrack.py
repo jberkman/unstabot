@@ -16,7 +16,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 class Matcher:
-    def __init__(self, regex, netloc=None, allowlist=None):
+    def __init__(self, regex, netloc, allowlist=None):
         self.pattern = re.compile(regex)
         self.netloc = netloc
         self.allowlist = allowlist if allowlist else []
@@ -25,10 +25,12 @@ class Matcher:
         match = self.pattern.search(message_content)
         if not match:
             return None
+        old_url = match.group(1)
         parsed_url = urlparse(match.group(1))
         query_params = {k: v for k, v in parse_qsl(parsed_url.query) if k in self.allowlist}
         new_query = urlencode(query_params)
-        return urlunparse(parsed_url._replace(netloc=self.netloc, query=new_query))
+        new_url = urlunparse(parsed_url._replace(netloc=self.netloc, query=new_query))
+        return new_url if new_url != old_url else None
 
 # List of Matcher instances
 matchers = [
@@ -38,6 +40,8 @@ matchers = [
     Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com'),
     Matcher(r'(https?://(?:www\.|m\.)?youtube\.com/watch[^\s]+)', 'youtube.com', allowlist=['v', 't']),
     Matcher(r'(https?://youtu\.be/[^\s]+)', 'youtu.be', allowlist=['v', 't']),
+    Matcher(r'(https?://(?:open|play)\.spotify\.com/[^\s]+)', 'spotify.com'),
+    Matcher(r'(https?://(?:www\.|old\.)?reddit\.com/[^\s]+)', 'old.reddit.com'),
 ]
 
 @client.event
