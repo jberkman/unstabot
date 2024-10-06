@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from dotenv import load_dotenv
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 import discord
 import os
 import re
@@ -16,16 +16,19 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 class Matcher:
-    def __init__(self, regex, netloc=None, unfurl=True):
+    def __init__(self, regex, netloc=None, allowlist=None):
         self.pattern = re.compile(regex)
         self.netloc = netloc
-        self.unfurl = unfurl
+        self.allowlist = allowlist if allowlist else []
 
     def match_and_transform(self, message_content):
         match = self.pattern.search(message_content)
-        return urlunparse(urlparse(match.group(1))
-            ._replace(netloc=self.netloc, query='')) if match else None
-        
+        if not match:
+            return None
+        parsed_url = urlparse(match.group(1))
+        query_params = {k: v for k, v in parse_qsl(parsed_url.query) if k in self.allowlist}
+        new_query = urlencode(query_params)
+        return urlunparse(parsed_url._replace(netloc=self.netloc, query=new_query))
 
 # List of Matcher instances
 matchers = [
@@ -33,6 +36,8 @@ matchers = [
     Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com'),
     Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)', 'threads.net'),
     Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com'),
+    Matcher(r'(https?://(?:www\.|m\.)?youtube\.com/watch[^\s]+)', 'youtube.com', allowlist=['v', 't']),
+    Matcher(r'(https?://youtu\.be/[^\s]+)', 'youtu.be', allowlist=['v', 't']),
 ]
 
 @client.event
