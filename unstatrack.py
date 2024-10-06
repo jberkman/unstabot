@@ -23,18 +23,15 @@ class Matcher:
 
     def match_and_transform(self, message_content):
         match = self.pattern.search(message_content)
-        if not match:
-            return None
-        parsed_url = urlparse(match.group(1))
-        netloc = self.netloc if self.netloc else parsed_url.netloc
-        url = urlunparse(parsed_url._replace(netloc=netloc, query=''))
-        return None if url == match.group(1) else url if self.unfurl else f'<{url}>'
+        return urlunparse(urlparse(match.group(1))
+            ._replace(netloc=self.netloc, query='')) if match else None
+        
 
 # List of Matcher instances
 matchers = [
     Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com'),
     Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com'),
-    Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)', unfurl=False),
+    Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)', 'threads.net'),
     Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com'),
 ]
 
@@ -52,9 +49,8 @@ async def on_message(message):
         new_url = matcher.match_and_transform(message.content)
         if new_url:
             await message.reply(f'itym {new_url}')
-            if matcher.unfurl:
-                # Hide the original unfurl
-                await message.edit(suppress=True)
+            # Hide the original unfurl
+            await message.edit(suppress=True)
             break  # Exit the loop after the first match
 
 # Run the bot
