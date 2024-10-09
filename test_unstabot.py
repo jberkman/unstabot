@@ -1,6 +1,6 @@
 import unittest
 from urllib.parse import urlparse
-from unstatrack import Matcher
+from unstabot import Matcher
 
 # Define global matchers
 instagram_matcher = Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com')
