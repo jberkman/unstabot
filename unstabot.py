@@ -23,17 +23,27 @@ class Matcher:
         new_url = urlunparse(parsed_url._replace(netloc=netloc, query=new_query))
         return new_url if new_url != old_url else None
 
-# List of Matcher instances
-matchers = [
-    Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com'),
-    Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com'),
-    Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)'),
-    Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com'),
-    Matcher(r'(https?://(?:www\.|m\.)?youtube\.com/(?:watch|shorts)[^\s]+)', allowlist=['v', 't']),
-    Matcher(r'(https?://youtu\.be/[^\s]+)', allowlist=['v', 't']),
-    Matcher(r'(https?://(?:open|play)\.spotify\.com/[^\s]+)'),
-    Matcher(r'(https?://(?:www\.|old\.)?reddit\.com/[^\s]+)', 'old.reddit.com'),
-]
+    INSTAGRAM = Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com')
+    TWITTER = Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com')
+    THREADS = Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)')
+    TIKTOK = Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com')
+    YOUTUBE = Matcher(r'(https?://(?:www\.|m\.)?youtube\.com/(?:watch|shorts)[^\s]+)', allowlist=['v', 't'])
+    YOUTU_BE = Matcher(r'(https?://youtu\.be/[^\s]+)', allowlist=['v', 't'])
+    SPOTIFY = Matcher(r'(https?://(?:open|play)\.spotify\.com/[^\s]+)')
+    REDDIT = Matcher(r'(https?://(?:www\.|old\.)?reddit\.com/[^\s]+)', 'old.reddit.com')
+
+    @staticmethod
+    def get_matchers():
+        return [
+            Matcher.INSTAGRAM,
+            Matcher.TWITTER,
+            Matcher.THREADS,
+            Matcher.TIKTOK,
+            Matcher.YOUTUBE,
+            Matcher.YOUTU_BE,
+            Matcher.SPOTIFY,
+            Matcher.REDDIT,
+        ]
 
 # Run the bot
 if __name__ == '__main__':
@@ -57,7 +67,7 @@ if __name__ == '__main__':
             return
 
         # FIXME? This will match the first URL in the message, even if there are multiple URLs
-        for matcher in matchers:
+        for matcher in Matcher.get_matchers():
             new_url = matcher.match_and_transform(message.content)
             if new_url:
                 await message.reply(f'itym {new_url}')
