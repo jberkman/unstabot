@@ -6,6 +6,15 @@ import os
 import re
 
 class Matcher:
+    INSTAGRAM = None
+    TWITTER = None
+    THREADS = None
+    TIKTOK = None
+    YOUTUBE = None
+    YOUTU_BE = None
+    SPOTIFY = None
+    REDDIT = None
+    
     def __init__(self, regex, netloc=None, allowlist=None):
         self.pattern = re.compile(regex)
         self.netloc = netloc
@@ -23,15 +32,6 @@ class Matcher:
         new_url = urlunparse(parsed_url._replace(netloc=netloc, query=new_query))
         return new_url if new_url != old_url else None
 
-    INSTAGRAM = Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com')
-    TWITTER = Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com')
-    THREADS = Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)')
-    TIKTOK = Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com')
-    YOUTUBE = Matcher(r'(https?://(?:www\.|m\.)?youtube\.com/(?:watch|shorts)[^\s]+)', allowlist=['v', 't'])
-    YOUTU_BE = Matcher(r'(https?://youtu\.be/[^\s]+)', allowlist=['v', 't'])
-    SPOTIFY = Matcher(r'(https?://(?:open|play)\.spotify\.com/[^\s]+)')
-    REDDIT = Matcher(r'(https?://(?:www\.|old\.)?reddit\.com/[^\s]+)', 'old.reddit.com')
-
     @staticmethod
     def get_matchers():
         return [
@@ -44,6 +44,15 @@ class Matcher:
             Matcher.SPOTIFY,
             Matcher.REDDIT,
         ]
+
+Matcher.INSTAGRAM = Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com')
+Matcher.TWITTER = Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com')
+Matcher.THREADS = Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)')
+Matcher.TIKTOK = Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com')
+Matcher.YOUTUBE = Matcher(r'(https?://(?:www\.|m\.)?youtube\.com/(?:watch|shorts)[^\s]+)', allowlist=['v', 't'])
+Matcher.YOUTU_BE = Matcher(r'(https?://youtu\.be/[^\s]+)', allowlist=['v', 't'])
+Matcher.SPOTIFY = Matcher(r'(https?://(?:open|play)\.spotify\.com/[^\s]+)')
+Matcher.REDDIT = Matcher(r'(https?://(?:www\.|old\.)?reddit\.com/[^\s]+)', 'old.reddit.com')
 
 # Run the bot
 if __name__ == '__main__':
