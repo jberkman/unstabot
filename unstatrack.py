@@ -5,16 +5,6 @@ import discord
 import os
 import re
 
-# Load environment variables from .env file
-load_dotenv()
-TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-
-# Initialize the bot with the necessary intents
-intents = discord.Intents.default()
-intents.messages = True
-intents.message_content = True
-client = discord.Client(intents=intents)
-
 class Matcher:
     def __init__(self, regex, netloc=None, allowlist=None):
         self.pattern = re.compile(regex)
@@ -45,23 +35,34 @@ matchers = [
     Matcher(r'(https?://(?:www\.|old\.)?reddit\.com/[^\s]+)', 'old.reddit.com'),
 ]
 
-@client.event
-async def on_ready():
-    print(f'We have logged in as {client.user}')
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    # FIXME? This will match the first URL in the message, even if there are multiple URLs
-    for matcher in matchers:
-        new_url = matcher.match_and_transform(message.content)
-        if new_url:
-            await message.reply(f'itym {new_url}')
-            # Hide the original unfurl
-            await message.edit(suppress=True)
-            break  # Exit the loop after the first match
-
 # Run the bot
-client.run(TOKEN)
+if __name__ == '__main__':
+    # Load environment variables from .env file
+    load_dotenv()
+    TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+
+    # Initialize the bot with the necessary intents
+    intents = discord.Intents.default()
+    intents.messages = True
+    intents.message_content = True
+    client = discord.Client(intents=intents)
+
+    @client.event
+    async def on_ready():
+        print(f'We have logged in as {client.user}')
+
+    @client.event
+    async def on_message(message):
+        if message.author == client.user:
+            return
+
+        # FIXME? This will match the first URL in the message, even if there are multiple URLs
+        for matcher in matchers:
+            new_url = matcher.match_and_transform(message.content)
+            if new_url:
+                await message.reply(f'itym {new_url}')
+                # Hide the original unfurl
+                await message.edit(suppress=True)
+                break  # Exit the loop after the first match
+
+    client.run(TOKEN)
