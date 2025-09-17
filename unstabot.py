@@ -45,7 +45,7 @@ class Matcher:
             Matcher.REDDIT,
         ]
 
-Matcher.INSTAGRAM = Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'ddinstagram.com')
+Matcher.INSTAGRAM = Matcher(r'(https?://(?:www\.)?instagram\.com/[^\s]+)', 'eeinstagram.com')
 Matcher.TWITTER = Matcher(r'(https?://(?:www\.)?(twitter|x)\.com/[^\s]+)', 'fixupx.com')
 Matcher.THREADS = Matcher(r'(https?://(?:www\.)?threads\.net/[^\s]+)')
 Matcher.TIKTOK = Matcher(r'(https?://(?:www\.)?tiktok\.com/[^\s]+)', 'vxtiktok.com')
