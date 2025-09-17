@@ -5,7 +5,7 @@ from unstabot import Matcher
 class TestMatcher(unittest.TestCase):
     def test_instagram(self):
         result = Matcher.INSTAGRAM.match_and_transform('Check this out: https://www.instagram.com/p/xyz123')
-        self.assertEqual(result, 'https://ddinstagram.com/p/xyz123')
+        self.assertEqual(result, 'https://eeinstagram.com/p/xyz123')
 
     def test_twitter(self):
         result = Matcher.TWITTER.match_and_transform('Check this out: https://twitter.com/user/status/123456')
